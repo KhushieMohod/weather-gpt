@@ -1,0 +1,52 @@
+[
+  {
+    "text": "Agromet Farming Bulletin: Rain and Heat Stress Guidance\n\nFor farmers and livestock keepers in weather-sensitive districts. Plan field operations using validated local observations, the latest forecast, and advice from the nearest agricultural extension office.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\agromet_farming_bulletin.txt",
+    "chunk_index": 0
+  },
+  {
+    "text": "Rainfall planning: delay pesticide and foliar nutrient spraying when high precipitation is forecast or rain is likely soon after application. Rain can wash chemicals from leaves, reduce treatment effectiveness, and increase runoff into ponds and drains. Inspect field drains before heavy rain, remove blockages, and avoid operating tractors on saturated soils. Harvest mature produce early when prolonged rain threatens quality, while protecting stored grain from moisture.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\agromet_farming_bulletin.txt",
+    "chunk_index": 1
+  },
+  {
+    "text": "Crop protection: stake vulnerable plants, check greenhouse and nursery covers, and move seed, fertilizer, and harvested produce to dry elevated storage. Do not enter flooded fields during lightning, strong winds, or fast-moving water. Record crop damage with photographs only when conditions are safe.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\agromet_farming_bulletin.txt",
+    "chunk_index": 2
+  },
+  {
+    "text": "Livestock heat stress: provide clean drinking water, shade, and cross-ventilation. Move animals away from direct afternoon sun and avoid transport or strenuous handling during the hottest part of the day. Watch for rapid breathing, drooling, weakness, staggering, or collapse. Separate an affected animal, cool it gradually with water and airflow, and contact a veterinarian promptly.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\agromet_farming_bulletin.txt",
+    "chunk_index": 3
+  },
+  {
+    "text": "Worker safety: schedule strenuous work for cooler morning or evening hours, take regular shaded breaks, use protective clothing, and maintain oral rehydration supplies. Stop work and seek shelter during lightning, severe wind, or flooding. Local extension officers should be consulted for crop- and district-specific actions.\n\nThis bulletin is a prototype reference. Confirm current rainfall, temperature, wind, and official agricultural advisories before taking action.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\agromet_farming_bulletin.txt",
+    "chunk_index": 4
+  },
+  {
+    "text": "IMD East Coast Marine Cyclone Advisory\n\nIssued for coastal districts along the Bay of Bengal and the east coast of India. A developing low-pressure area may intensify over the next 24 to 48 hours. Residents and marine operators should follow the latest official bulletins from the India Meteorological Department and local disaster authorities.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\imd_cyclone_advisory.txt",
+    "chunk_index": 0
+  },
+  {
+    "text": "Hazards: strengthening winds may reach dangerous velocities near the system center and along exposed coastal waters. Heavy rainfall can reduce visibility, flood low-lying roads, and create sudden drainage flows. Squally weather and rough to very rough seas may affect fishing grounds, ports, and ferry routes.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\imd_cyclone_advisory.txt",
+    "chunk_index": 1
+  },
+  {
+    "text": "Marine safety: fishing vessels should not venture into the warned area. Vessels already at sea should return to the nearest safe harbor when instructed, secure loose equipment, maintain radio watch, and follow Coast Guard and port control directions. Operators must not rely on informal social media updates when an official warning is active.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\imd_cyclone_advisory.txt",
+    "chunk_index": 2
+  },
+  {
+    "text": "Community safety routes: coastal residents should identify the nearest elevated shelter, keep evacuation routes clear, carry essential medicines and drinking water, and move early if local authorities issue an evacuation order. Avoid walking or driving through flooded underpasses, tidal channels, or roads blocked by fallen trees and power lines. Emergency teams should keep relief centers, communications equipment, and medical transport ready.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\imd_cyclone_advisory.txt",
+    "chunk_index": 3
+  },
+  {
+    "text": "This advisory is an educational prototype document. Always verify current warnings, observed wind values, cyclone tracks, and evacuation orders with official IMD, Coast Guard, district administration, and state disaster management sources.",
+    "source": "C:\\Users\\khush\\OneDrive\\Documents\\Github\\weather-gpt\\backend\\rag\\advisory_docs\\imd_cyclone_advisory.txt",
+    "chunk_index": 4
+  }
+]

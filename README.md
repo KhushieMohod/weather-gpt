@@ -1,400 +1,118 @@
-# 🌦️ WeatherGPT — Conversational AI for Weather Intelligence
+# 🌦️ WeatherGPT — Smart India Hackathon 2026 (Team Udgama)
 
-> **AI-powered, multilingual, and context-aware weather intelligence for forecasts, alerts, climate insights, and actionable decision support.**
+> Conversational, trust-grounded weather intelligence focused on Disaster Management.
 
-**Team:** Udgama
-**Smart India Hackathon 2026**
-**Problem Statement ID:** 26068
-**Problem Statement:** WeatherGPT — Conversational AI for Weather Forecasting, Alerts, and Climate Information
-**Theme:** Disaster Management
-**Category:** Software
+**Team:** Udgama  |  **Event:** Smart India Hackathon 2026  |  **Theme:** Disaster Management
+**Problem Statement ID:** 26068 — WeatherGPT: Conversational AI for Forecasting, Alerts & Climate Information
 
 ---
 
-## 📌 Overview
+## One-line Summary
 
-Weather and climate information in India is distributed across multiple sources such as **IMD, ISRO-MOSDAC, GFS/WRF, and ERA5**. While these sources provide valuable meteorological data, the information is often complex, fragmented, and difficult for non-technical users to interpret.
-
-**WeatherGPT** addresses this challenge through a conversational AI platform that brings verified meteorological information together and converts it into **location-specific, understandable, and actionable insights**.
-
-Users can interact with the system using **natural-language text or voice**, receive localized forecasts, understand weather risks, and obtain situation-specific recommendations.
-
-The platform is designed to serve the **general public, farmers, disaster-management authorities, researchers, aviation operators, marine operators, and urban authorities**.
+WeatherGPT unifies multi-source meteorological data (IMD, ISRO-MOSDAC, GFS/WRF, ERA5 and ground observations) into a modular, RAG-backed conversational platform that delivers location-specific forecasts, risk detection, and actionable advisories for disaster preparedness and response.
 
 ---
 
-## 🎯 Problem Statement
+## SIH 2026 Six-Slide Presentation Deck
 
-Current weather-information systems face several challenges:
+### Slide 1 — Title & Idea Identity
 
-* Meteorological data is fragmented across multiple platforms.
-* Raw weather and climate data can be difficult for citizens and non-technical users to understand.
-* Users often need to consult multiple sources to obtain relevant information.
-* Existing forecasts do not always translate directly into actionable decisions.
-* Rural and regional-language users may face accessibility barriers.
-* Extreme-weather events require timely and context-specific advisories.
-* Combining observations from different sources introduces data-quality and credibility challenges.
+- **Idea:** WeatherGPT — Conversational AI for Forecasting, Alerts & Climate Information
+- **Problem Statement ID:** 26068
+- **Team:** Udgama
+- **Theme:** Disaster Management
 
-WeatherGPT aims to bridge the gap between **complex meteorological data and real-world decision-making**.
+### Slide 2 — Proposed Solution & Core Capabilities
 
----
+WeatherGPT provides a trust-grounded weather intelligence layer for citizens, responders, and decision-makers. Its core capabilities are:
 
-## 💡 Proposed Solution
+- Multi-source fusion across IMD, ISRO-MOSDAC, numerical weather models, reanalysis, and ground observations.
+- Dynamic credibility scoring based on source authority, freshness, spatial relevance, agreement, and data quality.
+- FAISS-backed retrieval-augmented generation (RAG) for grounded answers from advisories, forecasts, and historical context.
+- Risk detection and alerts for hazards including cyclone, flood, heatwave, and severe weather events.
+- Multilingual conversational delivery and WebSocket-based real-time updates for alert propagation.
 
-WeatherGPT provides a unified conversational interface over multiple verified meteorological data sources.
+### Slide 3 — Technical Approach & Architecture Flow
 
-### Core Workflow
+The system follows a modular flow: **source connectors -> validation and normalization -> spatial and temporal deduplication -> credibility scoring -> PostgreSQL and FAISS indexes -> deterministic risk engine -> guarded RAG response generation -> multilingual API, WebSockets, dashboards, and alerts**. Deterministic rules remain authoritative for safety-critical risk states, while the LLM explains verified context rather than inventing facts.
 
-```text
-Meteorological Data Sources
-        │
-        ▼
-┌─────────────────────────┐
-│   Data Ingestion Layer  │
-│ IMD / MOSDAC / GFS/WRF  │
-│ ERA5 / Weather APIs     │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Data Validation &       │
-│ Quality Control         │
-│ Deduplication +         │
-│ Credibility Scoring     │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Weather Intelligence    │
-│ & RAG Engine            │
-└────────────┬────────────┘
-             │
-       ┌─────┴─────┐
-       ▼           ▼
-┌────────────┐ ┌───────────────┐
-│ Risk &     │ │ Context-Aware │
-│ Advisory   │ │ Intelligence  │
-│ Engine     │ │               │
-└─────┬──────┘ └───────┬───────┘
-      │                │
-      └────────┬───────┘
-               ▼
-┌─────────────────────────┐
-│ Conversational AI Layer │
-│ Text + Voice + Regional │
-│ Language Interaction    │
-└────────────┬────────────┘
-             │
-             ▼
-     Actionable Insights
-             │
-      ┌──────┼──────┐
-      ▼      ▼      ▼
-   Forecast Alerts Advisory
-```
+### Slide 4 — Feasibility, Viability & MVP Scope
+
+- **Feasibility:** Python and FastAPI support rapid integration with government feeds, model outputs, databases, FAISS, and WebSockets.
+- **Viability:** A modular pipeline allows low-cost incremental deployment, source substitution, and operation with cached advisories when feeds are delayed.
+- **MVP:** Ingest priority IMD and MOSDAC data, normalize and score observations, index official advisories in FAISS, expose location-aware chat and risk endpoints, and deliver multilingual alerts through a web client.
+
+### Slide 5 — Impact & Operational Benefits
+
+- **Farmers:** Actionable local advisories for sowing, irrigation, crop protection, and extreme-weather preparation.
+- **SDMAs and district administration:** Faster situational awareness, traceable evidence, localized risk alerts, and a shared operational view.
+- **Marine and aviation operations:** Source-ranked forecasts, hazard summaries, and timely alerts for route, port, and airport decisions.
+
+### Slide 6 — Research Foundation & Government System Integrations
+
+The solution builds on meteorological data engineering, retrieval-augmented generation, uncertainty-aware source ranking, spatial deduplication, and deterministic hazard rules. Planned government integrations include **IMD Meghdoot** for farmer-oriented advisories and **MOSDAC** for satellite-derived rainfall and geospatial observations, alongside official IMD forecasts and bulletins.
+
+The complete submission narrative is available in [docs/SIH_2026_Master_Submission.md](docs/SIH_2026_Master_Submission.md).
 
 ---
 
-## ✨ Key Features
+## Prototype Implementation Roadmap (5 Stages)
 
-### 1. 🤖 Conversational AI
+This repository follows a focused 5-stage prototype roadmap. Active status and implementation details are tracked in the project tracker: [Implementation.md](Implementation.md).
 
-Users can ask weather-related questions using natural language rather than navigating complex meteorological dashboards.
-
-Examples:
-
-* "Will it rain tomorrow?"
-* "Is there a cyclone risk in my area?"
-* "Should farmers avoid irrigation today?"
-* "What will the temperature be this weekend?"
+- **Stage 1 — Base Application Skeleton & FastAPI Structure**: Completed (see Stage 1 details and copy-pasteable boilerplate in the tracker).
+- **Stage 2 — Data Ingestion & Processing Pipelines**: Implement connectors and ingestion pipelines for IMD, ISRO-MOSDAC, GFS/WRF, ERA5 plus ground station ingestion; include validation, deduplication, and credibility scoring.
+- **Stage 3 — RAG + LLM Integration & Risk Engine**: Implement retrieval index, RAG pipeline, LLM safety/guardrails, and the Risk & Advisory engine (cyclone, flood, heatwave detectors).
+- **Stage 4 — Frontend & Delivery Channels**: Build conversational UI, regional-language support, voice interfaces, push/alerting channels and dashboard visualizations.
+- **Stage 5 — Deployment, Scaling & Real-Time Ops**: Containerized deployment, orchestration (K8s), monitoring, real-time alerting, and SLA-driven pipeline hardening.
 
 ---
 
-### 2. 🔎 RAG-Grounded Intelligence
+## Modular Architecture & Core Data Sources
 
-The platform uses **Retrieval-Augmented Generation (RAG)** to ground AI-generated responses in verified meteorological information.
+WeatherGPT is intentionally modular so teams can work independently on ingestion, intelligence, and delivery.
 
-This helps:
-
-* Reduce hallucinations
-* Improve factual reliability
-* Retrieve relevant weather information
-* Generate responses based on trusted data sources
-
----
-
-### 3. ⚠️ Risk & Advisory Engine
-
-The system identifies potentially dangerous weather conditions and generates context-specific recommendations.
-
-Potential scenarios include:
-
-* Cyclones
-* Floods
-* Heatwaves
-* Extreme rainfall
-* Other severe-weather conditions
-
-Instead of simply reporting:
-
-> "Heavy rainfall expected."
-
-the system aims to provide decision-oriented information such as:
-
-> "Heavy rainfall is expected in your region. Consider avoiding low-lying areas and monitor official flood advisories."
+- **Data Layer**: Collects raw meteorological and observational data from:
+  - IMD (official forecasts & bulletins)
+  - ISRO-MOSDAC (satellite-derived rainfall & parameters)
+  - GFS / WRF model outputs (numerical models)
+  - ERA5 reanalysis (historical/context)
+  - Third-party weather APIs & ground observations
+- **Processing Layer**: Ingestion pipelines, quality checks, deduplication, normalization, and credibility scoring.
+- **Intelligence Layer**: Retrieval (vector + metadata), RAG pipeline, LLM context handling, and domain logic for forecast interpretation.
+- **Risk & Advisory Layer**: Event detectors, severity scoring, and action-oriented advisories.
+- **Delivery Layer**: Conversational API, dashboards, alerts, and voice interfaces.
 
 ---
 
-### 4. 🌍 Multi-Source Data Fusion
+## Development Workflow
 
-WeatherGPT combines information from multiple meteorological sources, including:
-
-* IMD
-* ISRO-MOSDAC
-* GFS/WRF
-* ERA5
-* Weather APIs
-* Available ground-level observations
-
-This allows the platform to provide more relevant and potentially **hyperlocal weather intelligence**.
+- Active implementation tracker and all on-going tasks are maintained in: [Implementation.md](Implementation.md).
+- To get started quickly, open the `Implementation.md` Stage 1 section — it contains ready-to-run FastAPI boilerplate (database config, SQLAlchemy models, router, CORS middleware, and a bootstrap script).
 
 ---
 
-### 5. ✅ Data Validation & Credibility Scoring
+## Technologies (Recommended)
 
-Incoming observations are processed before being incorporated into the system.
-
-The validation layer performs tasks such as:
-
-* Data deduplication
-* Quality checking
-* Credibility scoring
-* Source validation
-
-This improves the reliability of downstream AI responses.
+- Backend: `FastAPI` (prototype), Python
+- Database: `PostgreSQL` with `SQLAlchemy`
+- Data Processing: Python pipelines (Pandas, xarray, cfgrib, netCDF4)
+- Models & Reanalysis: GFS/WRF outputs, ERA5 (ECMWF), MOSDAC/IMD feeds
+- AI: Retrieval + LLM (RAG) with vector store
+- Deployment: Docker, Kubernetes, CI/CD
 
 ---
 
-### 6. 🗣️ Multilingual & Voice Access
+## How to Contribute / Next Steps
 
-Weather intelligence can be delivered through:
-
-* Text
-* Voice
-* Regional languages
-
-This reduces accessibility barriers for rural users, farmers, and users with limited digital literacy.
+- See the live tracker: [Implementation.md](Implementation.md) — it contains what to pick up next and the Stage 1 boilerplate to run locally.
+- Prefer small, focused PRs per module (ingestion, processing, intelligence, UI).
 
 ---
 
-### 7. 📍 Context-Aware Intelligence
+## License & Credits
 
-Responses can consider:
-
-* User location
-* Time
-* User intent
-* Current weather conditions
-* Forecast information
-
-This enables the system to provide more relevant responses rather than generic weather information.
-
----
-
-### 8. 🔔 Predictive & Proactive Alerts
-
-WeatherGPT is designed not only to answer questions but also to support **early warning and preparedness**.
-
-The system can identify emerging risks and provide warnings before conditions become critical.
-
----
-
-## 🧠 Innovation & Uniqueness
-
-WeatherGPT combines several capabilities into a single weather-intelligence platform.
-
-| Innovation                     | Description                                                               |
-| ------------------------------ | ------------------------------------------------------------------------- |
-| **Context-Aware Intelligence** | Adapts responses based on location, time, intent, and conditions          |
-| **Predictive + Proactive**     | Supports early warnings before critical weather conditions                |
-| **Action-to-Decision Layer**   | Converts meteorological information into practical recommendations        |
-| **Trust-Grounded AI**          | Uses verified sources and RAG to reduce hallucinations                    |
-| **Multi-Source Fusion**        | Combines multiple meteorological datasets                                 |
-| **Multilingual Voice Access**  | Makes weather intelligence accessible to regional and non-technical users |
-| **Continuous Intelligence**    | Continuously processes incoming observations and forecasts                |
-| **Modular Architecture**       | Allows independent development and future integration of new data sources |
-
----
-
-## 🏗️ System Architecture
-
-The platform follows a modular architecture consisting of:
-
-### Data Layer
-
-Responsible for collecting weather and climate information from different sources.
-
-**Sources:**
-
-* IMD
-* ISRO-MOSDAC
-* GFS/WRF
-* ERA5
-* Weather APIs
-* Ground observations
-
-### Data Processing Layer
-
-Responsible for:
-
-* Data ingestion
-* Validation
-* Deduplication
-* Credibility scoring
-* Data normalization
-
-### Intelligence Layer
-
-Contains the core AI components:
-
-* LLM
-* RAG pipeline
-* Weather intelligence
-* Context processing
-* Forecast interpretation
-
-### Risk & Advisory Layer
-
-Analyzes weather conditions and determines potential hazards.
-
-It converts detected risks into situation-specific recommendations.
-
-### Delivery Layer
-
-Provides weather intelligence through:
-
-* Conversational interface
-* Dashboards
-* Alerts
-* Voice interaction
-* Multilingual responses
-
----
-
-## 🛠️ Technology Stack
-
-The proposed system can be implemented using the following technologies:
-
-| Layer                       | Technologies                             |
-| --------------------------- | ---------------------------------------- |
-| **AI / LLM**                | Large Language Models, RAG               |
-| **Backend**                 | FastAPI                                  |
-| **Data Processing**         | Python-based processing pipelines        |
-| **Database**                | PostgreSQL                               |
-| **Real-Time Communication** | WebSockets                               |
-| **GIS / Location**          | GIS technologies                         |
-| **Weather Data**            | IMD, MOSDAC, GFS/WRF, ERA5, Weather APIs |
-| **Deployment**              | Docker, Kubernetes                       |
-| **Cloud**                   | Scalable cloud infrastructure            |
-| **Interface**               | Web / Conversational UI                  |
-| **Voice**                   | Speech-to-Text / Text-to-Speech systems  |
-
-The project document specifically identifies **LLMs, RAG, GIS, FastAPI, PostgreSQL, WebSockets, Docker/Kubernetes, and cloud infrastructure** as suitable building blocks for implementation.
-
----
-
-## 👥 Target Users
-
-WeatherGPT is designed for a broad range of users:
-
-### 🌾 Farmers
-
-* Weather-aware agricultural decisions
-* Rainfall information
-* Extreme-weather warnings
-* Location-specific advisories
-
-### 🚨 Disaster Management Authorities
-
-* Early warnings
-* Risk monitoring
-* Situation-specific advisories
-* Faster response planning
-
-### ✈️ Aviation Operators
-
-* Weather-related operational information
-* Forecast insights
-* Risk awareness
-
-### 🚢 Marine Operators
-
-* Weather and marine-condition awareness
-* Severe-weather information
-
-### 🏙️ Urban Authorities
-
-* Weather intelligence for planning
-* Extreme-weather preparedness
-
-### 👨‍👩‍👧 General Public
-
-* Local forecasts
-* Weather alerts
-* Climate information
-* Natural-language weather queries
-
-## 📊 Impact & Benefits
-
-### Faster Disaster Response
-
-Provides real-time forecasts, warnings, and extreme-weather alerts to support faster action during events such as cyclones, floods, and heatwaves.
-
-### Accessible Weather Intelligence
-
-Multilingual and voice-based interaction makes weather information more accessible to rural communities, farmers, and users with limited digital literacy.
-
-### Better Decision-Making
-
-Transforms complex weather and climate information into location-specific recommendations for agriculture, disaster management, aviation, marine operations, and urban planning.
-
-### Real-Time Weather Access
-
-Brings information from multiple meteorological sources into a single conversational platform.
-
-### Personalized Intelligence
-
-Combines live weather information, user location, and natural-language queries to provide contextual information.
-
-### Scalable Public Utility
-
-A cloud-based architecture allows the platform to support large numbers of users and integrate additional data sources.
-
-These impact areas are aligned with the project's proposed benefits, including faster disaster response, accessible weather intelligence, actionable decision support, real-time access, and scalable deployment.
-
----
-
-## 🔐 Reliability & Trust
-
-WeatherGPT is designed around a **trust-grounded AI approach**.
-
-Rather than allowing the LLM to independently generate weather information, the system uses verified meteorological sources and retrieval mechanisms.
-
-```text
-Verified Data
-      ↓
-Validation
-      ↓
-Retrieval
-      ↓
-RAG
-      ↓
-LLM
-      ↓
-Context-Aware Response
-```
-
-This architecture aims to minimize unsupported AI-generated claims and improve the reliability of weather-related responses.
+Team Udgama — Smart India Hackathon 2026
 
 ---
 
@@ -538,11 +256,63 @@ Run the project's test suite using:
 pytest
 ```
 
+### SIH 2026 Compliance Checks
+
+The automated SIH compliance suite covers extreme telemetry validation and credibility scoring, IMD cyclone advisory retrieval through the vector-store contract, critical rainfall threshold alerts, and the `/api/health` endpoint.
+
+From the repository root:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r backend\requirements.txt
+pip install pytest httpx
+pytest tests\test_sih_compliance.py -q
+```
+
+The tests use a temporary SQLite database. The RAG check uses the checked-in `backend/rag/advisory_docs/imd_cyclone_advisory.txt` fixture and does not require an LLM API key.
+
+### Live SIH Demonstration
+
+Run the five-phase terminal demonstration from the repository root:
+
+```powershell
+python -m backend.scripts.demo_simulation
+```
+
+It uses an isolated in-memory SQLite session, persists and verifies severe-weather alerts, retrieves the local advisory documents, applies deterministic RAG safety guardrails, and prints Hindi/Telugu translation plus mock STT/TTS outputs. FAISS and external LLM services are optional for the demonstration.
+
 For frontend testing:
 
 ```bash
 npm test
 ```
+
+### Run the integrated prototype
+
+Install the backend dependencies from the repository root:
+
+```powershell
+pip install -r backend/requirements.txt
+```
+
+Choose one supported LLM provider. Gemini is the default:
+
+```powershell
+$env:LLM_PROVIDER="gemini"
+$env:GEMINI_API_KEY="your-gemini-key"
+python run_app.py
+```
+
+For OpenAI instead:
+
+```powershell
+$env:LLM_PROVIDER="openai"
+$env:OPENAI_API_KEY="your-openai-key"
+python run_app.py
+```
+
+`run_app.py` seeds the local FAISS advisory index when it is missing, then starts FastAPI at `http://127.0.0.1:8000`. To force a rebuild after changing advisory files, run `python -m backend.scripts.ingest_docs`. Keep API keys in environment variables and never commit them.
 
 > Update these commands according to the final implementation of the repository.
 

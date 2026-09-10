@@ -1,0 +1,26 @@
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment Variables & Keys
+.env
+.env.local
+
+# Databases & Vector Stores
+*.db
+*.sqlite
+*.sqlite3
+backend/rag/faiss_index/
+
+# OS & Editor Files
+.DS_Store
+.vscode/
+.idea/
