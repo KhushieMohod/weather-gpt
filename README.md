@@ -116,7 +116,7 @@ Team Udgama — Smart India Hackathon 2026
 
 ---
 
-## 🚀 Future Scope
+## Future Scope
 
 The modular design allows WeatherGPT to evolve into a broader environmental intelligence platform.
 
