@@ -21,16 +21,30 @@ class ConnectionManager:
         self.active: dict[str, set[WebSocket]] = {}
 
     async def connect(self, session_id: str, websocket: WebSocket) -> None:
+        from ..services.metrics import ACTIVE_CHAT_SESSIONS
         await websocket.accept()
         self.active.setdefault(session_id, set()).add(websocket)
+        total = sum(len(sockets) for sockets in self.active.values())
+        ACTIVE_CHAT_SESSIONS.set(total)
 
     def disconnect(self, session_id: str, websocket: WebSocket) -> None:
+        from ..services.metrics import ACTIVE_CHAT_SESSIONS
         connections = self.active.get(session_id)
         if not connections:
             return
         connections.discard(websocket)
         if not connections:
             self.active.pop(session_id, None)
+        total = sum(len(sockets) for sockets in self.active.values())
+        ACTIVE_CHAT_SESSIONS.set(total)
+
+    async def broadcast_all(self, message: dict[str, Any]) -> None:
+        for session_id, sockets in list(self.active.items()):
+            for ws in list(sockets):
+                try:
+                    await ws.send_json(message)
+                except Exception:
+                    pass
 
 
 manager = ConnectionManager()

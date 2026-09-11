@@ -26,6 +26,7 @@ class ValidationResult:
     status: str
     score: float
     errors: list[str]
+    fused_score: Any | None = None
 
 
 def _as_number(value: Any, field_name: str, errors: list[str]) -> float | None:
@@ -147,7 +148,7 @@ def validate_observation(payload: Mapping[str, Any], db: Session) -> ValidationR
         if _find_duplicate(db, normalized):
             errors.append("duplicate observation at the rounded location and timestamp")
 
-    consistency = _consistency_score(db, normalized) if normalized else 0.0
+    consistency = _consistency_score(db, normalized) if normalized else 1.0
     score = max(0.0, min(1.0, SOURCE_REPUTATION.get(source, 0.60) * consistency * (0.5 if errors else 1.0)))
     status = "valid" if normalized and not errors else "rejected"
     if errors:

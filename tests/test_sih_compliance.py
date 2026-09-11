@@ -41,6 +41,11 @@ from backend.services.validation import validate_observation
 
 @pytest.fixture(scope="module")
 def db_session():
+    if TEST_DATABASE.exists():
+        try:
+            TEST_DATABASE.unlink()
+        except OSError:
+            pass
     engine = create_engine(
         f"sqlite:///{TEST_DATABASE.as_posix()}",
         connect_args={"check_same_thread": False},
@@ -52,8 +57,11 @@ def db_session():
     finally:
         session.close()
         engine.dispose()
-        if TEST_DATABASE.exists():
-            TEST_DATABASE.unlink()
+        try:
+            if TEST_DATABASE.exists():
+                TEST_DATABASE.unlink()
+        except OSError:
+            pass
 
 
 @pytest.fixture(scope="module")

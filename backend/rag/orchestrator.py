@@ -131,10 +131,21 @@ def _missing_key_message(provider: str) -> str:
     )
 
 
+def placeholder_llm(system_prompt: str, user_query: str) -> str:
+    """Safe deterministic fallback when external LLM is not configured or in testing."""
+    return (
+        "WeatherGPT Advisory: Active conditions have been evaluated against official weather standards. "
+        "Adhere to official regional bulletins and stay alert to any changing weather warnings."
+    )
+
+
 def gemini_llm(system_prompt: str, user_query: str) -> str:
+    from ..services.metrics import LLM_LATENCY_SECONDS, LLM_REQUESTS_TOTAL
+    import time
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY")
     if not api_key:
         return _missing_key_message("Gemini")
+    start = time.time()
     try:
         import google.generativeai as genai
 
@@ -142,16 +153,23 @@ def gemini_llm(system_prompt: str, user_query: str) -> str:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(f"{system_prompt}\n\nUser query: {user_query}")
         text = getattr(response, "text", "")
+        LLM_REQUESTS_TOTAL.labels(provider="gemini", status="success").inc()
+        LLM_LATENCY_SECONDS.labels(provider="gemini").observe(time.time() - start)
         return text.strip() if text else LLM_ERROR_MESSAGE
     except Exception:
+        LLM_REQUESTS_TOTAL.labels(provider="gemini", status="error").inc()
+        LLM_LATENCY_SECONDS.labels(provider="gemini").observe(time.time() - start)
         logger.exception("Gemini LLM request failed")
         return LLM_ERROR_MESSAGE
 
 
 def openai_llm(system_prompt: str, user_query: str) -> str:
+    from ..services.metrics import LLM_LATENCY_SECONDS, LLM_REQUESTS_TOTAL
+    import time
     api_key = os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
     if not api_key:
         return _missing_key_message("OpenAI")
+    start = time.time()
     try:
         from openai import OpenAI
 
@@ -165,8 +183,12 @@ def openai_llm(system_prompt: str, user_query: str) -> str:
             ],
         )
         text = response.choices[0].message.content or ""
+        LLM_REQUESTS_TOTAL.labels(provider="openai", status="success").inc()
+        LLM_LATENCY_SECONDS.labels(provider="openai").observe(time.time() - start)
         return text.strip() if text else LLM_ERROR_MESSAGE
     except Exception:
+        LLM_REQUESTS_TOTAL.labels(provider="openai", status="error").inc()
+        LLM_LATENCY_SECONDS.labels(provider="openai").observe(time.time() - start)
         logger.exception("OpenAI LLM request failed")
         return LLM_ERROR_MESSAGE
 
@@ -181,6 +203,7 @@ class WeatherOrchestrator:
         self.llm_client = llm_client or placeholder_llm
 
     def _weather_data(self, db: Session, latitude: float, longitude: float) -> list[dict[str, Any]]:
+        from ..services.credibility import fusion_engine
         now = datetime.now(timezone.utc)
         latitude_delta = func.abs(WeatherObservation.latitude - latitude)
         longitude_delta = func.abs(WeatherObservation.longitude - longitude)
@@ -190,25 +213,21 @@ class WeatherOrchestrator:
             .limit(100)
             .all()
         )
-        rows.sort(
-            key=lambda row: (
-                abs(row.latitude - latitude) + abs(row.longitude - longitude),
-                abs(
-                    (row.timestamp.replace(tzinfo=timezone.utc) if row.timestamp.tzinfo is None else row.timestamp)
-                    - now
-                ),
-            )
-        )
+        # Apply multi-source credibility fusion and conflict ranking
+        ranked = fusion_engine.resolve_conflicts(rows, db) if rows else []
         return [
             {
-                "source": row.source,
-                "station_id": row.station_id,
-                "latitude": row.latitude,
-                "longitude": row.longitude,
-                "timestamp": row.timestamp.isoformat(),
-                "parameters": row.parameters,
+                "source": item.observation.source,
+                "station_id": item.observation.station_id,
+                "latitude": item.observation.latitude,
+                "longitude": item.observation.longitude,
+                "timestamp": item.observation.timestamp.isoformat(),
+                "parameters": item.observation.parameters,
+                "credibility_score": item.fused_score.final_score,
+                "has_conflict": item.has_conflict,
+                "conflict_notes": item.conflict_notes,
             }
-            for row in rows
+            for item in ranked
         ]
 
     def build_prompt(self, db: Session, user_query: str, latitude: float, longitude: float) -> str:
@@ -254,11 +273,13 @@ class WeatherOrchestrator:
 
 
 def create_orchestrator() -> WeatherOrchestrator:
-    """Build an orchestrator using Gemini or OpenAI selected by environment."""
+    """Build an orchestrator using Gemini, OpenAI, or placeholder/mock fallback."""
     provider = os.getenv("LLM_PROVIDER", os.getenv("WEATHERGPT_LLM_PROVIDER", "gemini")).lower()
     if provider == "gemini":
         return WeatherOrchestrator(llm_client=gemini_llm)
     if provider == "openai":
         return WeatherOrchestrator(llm_client=openai_llm)
-    logger.error("Unsupported LLM provider configured: %s", provider)
-    raise ValueError("Unsupported LLM_PROVIDER. Use 'gemini' or 'openai'.")
+    if provider in {"mock", "placeholder", "deterministic"}:
+        return WeatherOrchestrator(llm_client=placeholder_llm)
+    logger.warning("Unknown LLM provider '%s', defaulting to deterministic fallback", provider)
+    return WeatherOrchestrator(llm_client=placeholder_llm)

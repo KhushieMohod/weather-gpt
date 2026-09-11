@@ -1,0 +1,29 @@
+groups:
+  - name: weathergpt_alert_rules
+    rules:
+      - alert: WeatherConnectorDown
+        expr: rate(weathergpt_connector_fetch_total{status="error"}[15m]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Weather connector {{ $labels.source }} experiencing elevated failures"
+          description: "Over 50% of fetch operations for {{ $labels.source }} failed in the last 15 minutes."
+
+      - alert: LLMInferenceFailureHigh
+        expr: rate(weathergpt_llm_requests_total{status="error"}[10m]) > 0.2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WeatherGPT LLM generation error rate above 20%"
+          description: "Provider {{ $labels.provider }} is failing more than 20% of inference requests."
+
+      - alert: CriticalFloodAlertSurge
+        expr: increase(weathergpt_alerts_total{severity="critical"}[1h]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Surge in critical weather disaster alerts"
+          description: "More than 5 critical hazard warnings issued within the last hour."

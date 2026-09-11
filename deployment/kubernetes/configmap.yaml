@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: weathergpt-config
+  namespace: weathergpt
+data:
+  APP_HOST: "0.0.0.0"
+  APP_PORT: "8000"
+  ENABLE_SCHEDULER: "true"
+  ENABLE_RISK_MONITOR: "true"
+  LLM_PROVIDER: "gemini"
+  LLM_FALLBACK_PROVIDER: "openai"
+  TRANSLATION_PROVIDER: "mock"
+  STT_PROVIDER: "mock"
+  TTS_PROVIDER: "mock"
+  IMD_FETCH_CRON: "*/15 * * * *"
+  MOSDAC_FETCH_CRON: "*/30 * * * *"
+  GFS_FETCH_CRON: "0 */6 * * *"
+  ERA5_FETCH_CRON: "0 6 * * *"
+  LOG_LEVEL: "INFO"

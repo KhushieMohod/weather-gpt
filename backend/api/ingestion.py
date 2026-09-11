@@ -73,3 +73,49 @@ def get_ingestion_logs(
     except SQLAlchemyError as exc:
         logger.exception("Failed to retrieve credibility logs")
         raise HTTPException(status_code=500, detail="Unable to retrieve credibility logs") from exc
+
+
+@router.post("/batch", status_code=status.HTTP_200_OK)
+def batch_ingest(
+    payload: dict[str, Any] | list[dict[str, Any]] = Body(...),
+    db: Session = Depends(get_db),
+) -> dict[str, Any]:
+    """Ingest a batch of weather observation records transactionally."""
+    from ..services.pipeline import ingest_pipeline
+    records: list[dict[str, Any]]
+    if isinstance(payload, list):
+        records = payload
+    else:
+        records = payload.get("observations", payload.get("records", [payload]))
+
+    source = "batch"
+    if records and isinstance(records[0], dict) and "source" in records[0]:
+        source = str(records[0]["source"])
+
+    report = ingest_pipeline.process_batch(records, db, source_name=source)
+    return report.to_dict()
+
+
+@router.post("/trigger/{source}", status_code=status.HTTP_200_OK)
+async def trigger_connector_fetch(source: str) -> dict[str, Any]:
+    """Manually trigger external connector data fetch and ingestion."""
+    from ..services.scheduler import weather_scheduler
+    try:
+        report = await weather_scheduler.trigger_now(source)
+        return {
+            "source": source,
+            "status": "completed",
+            "report": report.to_dict(),
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Manual trigger for connector '%s' failed", source)
+        raise HTTPException(status_code=500, detail=f"Failed to trigger {source}: {exc}") from exc
+
+
+@router.get("/pipeline/status")
+def get_pipeline_status() -> dict[str, Any]:
+    """Get the current running status and job schedules of the ingestion pipeline."""
+    from ..services.scheduler import weather_scheduler
+    return weather_scheduler.get_status()

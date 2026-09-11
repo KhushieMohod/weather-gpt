@@ -52,11 +52,104 @@ const sessionId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
 let socket;
 const $ = id => document.getElementById(id);
 function addMessage(text, mine=false) { const el=document.createElement('div'); el.className=`message max-w-xl rounded-2xl p-4 text-sm leading-6 ${mine ? 'ml-auto rounded-br-sm bg-slate-900 text-white' : 'rounded-tl-sm bg-emerald-100'}`; el.textContent=text; $('messages').appendChild(el); $('messages').scrollTop=$('messages').scrollHeight; return el; }
-function connect() { const scheme=location.protocol==='https:'?'wss':'ws'; socket=new WebSocket(`${scheme}://${location.host}/api/ws/chat/${sessionId}`); socket.onopen=()=> $('connection').textContent='Connected'; socket.onclose=()=> { $('connection').textContent='Offline'; setTimeout(connect,2500); }; socket.onerror=()=> $('connection').textContent='Reconnecting...'; let current=null; socket.onmessage=event=> { const data=JSON.parse(event.data); if(data.type==='start') current=addMessage(''); if(data.type==='token' && current) { current.textContent+=data.text; $('messages').scrollTop=$('messages').scrollHeight; } if(data.type==='done' && current) { fetch(`${API}/api/voice/synthesize`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:current.textContent,language:$('language').value})}).then(r=>r.json()).then(audio=> { $('voiceStatus').classList.remove('hidden'); $('voiceStatus').textContent=`Audio answer ready: ${audio.audio_url}`; }); } if(data.type==='error') addMessage(data.detail); }; }
-function loadAlerts() { fetch(`${API}/api/risk/alerts?status=active&limit=8`).then(r=>r.json()).then(alerts=> { $('alerts').innerHTML=alerts.length ? alerts.map(a=>`<article class="rounded-xl border border-orange-200 bg-orange-50 p-4"><div class="flex items-center gap-3"><span class="alert-dot h-2 w-2 rounded-full bg-orange-600"></span><strong class="text-sm">${a.hazard_type.replaceAll('_',' ')}</strong></div><p class="mt-2 text-xs leading-5 text-slate-600">${a.trigger_value} crossed ${a.threshold}. ${a.recommendations['agricultural_workers']?.[0] || ''}</p></article>`).join('') : '<div class="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">No active severe alerts.</div>'; }).catch(()=> $('alerts').innerHTML='<div class="rounded-xl bg-slate-100 p-4 text-sm text-slate-500">Alerts unavailable.</div>'); }
-$('composer').onsubmit=e=> { e.preventDefault(); const text=$('query').value.trim(); if(!text || !socket || socket.readyState!==1) return; addMessage(text,true); socket.send(JSON.stringify({user_query:`As a ${$('persona').value}: ${text}`, language:$('language').value, latitude:Number($('latitude').value), longitude:Number($('longitude').value)})); $('query').value=''; };
-$('mic').onclick=()=> { $('voiceStatus').classList.remove('hidden'); $('voiceStatus').textContent='Simulating microphone input...'; fetch(`${API}/api/voice/transcribe`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio_base64:btoa('mock-weather-audio'),language:$('language').value})}).then(r=>r.json()).then(data=> { $('query').value=data.text; $('voiceStatus').textContent='Voice prompt ready. Press Send to ask it.'; }).catch(()=> $('voiceStatus').textContent='Voice service unavailable.'); };
-$('refreshAlerts').onclick=loadAlerts; connect(); loadAlerts();
+function connect() {
+  const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
+  socket = new WebSocket(`${scheme}://${location.host}/api/ws/chat/${sessionId}`);
+  socket.onopen = () => $('connection').textContent = 'Connected';
+  socket.onclose = () => { $('connection').textContent = 'Offline'; setTimeout(connect, 2500); };
+  socket.onerror = () => $('connection').textContent = 'Reconnecting...';
+  let current = null;
+  socket.onmessage = event => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'start') current = addMessage('');
+      if (data.type === 'token' && current) {
+        current.textContent += data.text;
+        $('messages').scrollTop = $('messages').scrollHeight;
+      }
+      if (data.type === 'done' && current) {
+        fetch(`${API}/api/voice/synthesize`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({text: current.textContent, language: $('language').value})
+        })
+        .then(r => r.json())
+        .then(audio => {
+          const audioSrc = audio.audio_url || audio.audio_base64;
+          if (audioSrc) {
+            $('voiceStatus').classList.remove('hidden');
+            $('voiceStatus').innerHTML = `<span>Audio answer ready:</span> <a href="${audioSrc}" target="_blank" class="font-bold underline text-orange-700 ml-1">▶ Listen WAV</a>`;
+          }
+        })
+        .catch(() => {});
+      }
+      if (data.type === 'alert') {
+        loadAlerts();
+        const alertName = data.alerts?.[0]?.hazard_type?.replace(/_/g, ' ') || 'Severe Weather';
+        addMessage(`🚨 Critical Risk Broadcast: Active ${alertName} detected. Please check the Risk Radar.`);
+      }
+      if (data.type === 'error') addMessage(data.detail);
+    } catch(e) {}
+  };
+}
+function loadAlerts() {
+  fetch(`${API}/api/risk/alerts?status=active&limit=8`)
+    .then(r => r.json())
+    .then(alerts => {
+      if (!alerts || !alerts.length) {
+        $('alerts').innerHTML = '<div class="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">No active severe alerts.</div>';
+        return;
+      }
+      $('alerts').innerHTML = alerts.map(a => {
+        const recs = a.recommendations || {};
+        const personaKey = $('persona').value === 'Disaster Manager' ? 'urban_disaster_teams' : 'agricultural_workers';
+        const recText = recs[personaKey]?.[0] || Object.values(recs)[0]?.[0] || 'Follow official instructions.';
+        return `<article class="rounded-xl border border-orange-200 bg-orange-50 p-4">
+          <div class="flex items-center gap-3">
+            <span class="alert-dot h-2 w-2 rounded-full bg-orange-600"></span>
+            <strong class="text-sm">${a.hazard_type.replaceAll('_', ' ')}</strong>
+            <span class="ml-auto text-xs uppercase px-2 py-0.5 rounded bg-orange-200 text-orange-800 font-bold">${a.severity}</span>
+          </div>
+          <p class="mt-2 text-xs leading-5 text-slate-600">${a.trigger_value} crossed threshold ${a.threshold}. ${recText}</p>
+        </article>`;
+      }).join('');
+    })
+    .catch(() => {
+      $('alerts').innerHTML = '<div class="rounded-xl bg-slate-100 p-4 text-sm text-slate-500">Alerts unavailable.</div>';
+    });
+}
+$('composer').onsubmit = e => {
+  e.preventDefault();
+  const text = $('query').value.trim();
+  if (!text || !socket || socket.readyState !== 1) return;
+  addMessage(text, true);
+  socket.send(JSON.stringify({
+    user_query: `As a ${$('persona').value}: ${text}`,
+    language: $('language').value,
+    latitude: Number($('latitude').value),
+    longitude: Number($('longitude').value)
+  }));
+  $('query').value = '';
+};
+$('mic').onclick = () => {
+  $('voiceStatus').classList.remove('hidden');
+  $('voiceStatus').textContent = 'Simulating microphone input...';
+  fetch(`${API}/api/voice/transcribe`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({audio_base64: btoa('mock-weather-audio'), language: $('language').value})
+  })
+  .then(r => r.json())
+  .then(data => {
+    $('query').value = data.text;
+    $('voiceStatus').textContent = 'Voice prompt ready. Press Send to ask it.';
+  })
+  .catch(() => $('voiceStatus').textContent = 'Voice service unavailable.');
+};
+$('refreshAlerts').onclick = loadAlerts;
+$('persona').onchange = loadAlerts;
+connect();
+loadAlerts();
 </script>
 </body>
 </html>

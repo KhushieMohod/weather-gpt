@@ -1,0 +1,107 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weathergpt-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://weather_user:weather_password@postgres:5432/weather_gpt
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8000
+      - ENABLE_SCHEDULER=true
+      - ENABLE_RISK_MONITOR=true
+      - LLM_PROVIDER=gemini
+      - TRANSLATION_PROVIDER=mock
+      - STT_PROVIDER=mock
+      - TTS_PROVIDER=mock
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - weathergpt-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: weathergpt-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: weather_user
+      POSTGRES_PASSWORD: weather_password
+      POSTGRES_DB: weather_gpt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather_user -d weather_gpt"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weathergpt-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: weathergpt-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weathergpt-network
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: weathergpt-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deployment/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deployment/monitoring/alerting-rules.yml:/etc/prometheus/alerting-rules.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - weathergpt-network
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: weathergpt-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=weathergpt
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deployment/monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/weathergpt.json:ro
+    depends_on:
+      - prometheus
+    networks:
+      - weathergpt-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  weathergpt-network:
+    driver: bridge
