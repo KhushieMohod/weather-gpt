@@ -1,0 +1,131 @@
+.alertPanel {
+  flex-shrink: 0;
+}
+
+.viewAll {
+  font-size: 12px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.viewAll:hover {
+  text-decoration: underline;
+}
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.alertCard {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 10px 12px;
+  border-left-width: 4px;
+}
+
+.alertTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.alertIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alertInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.alertTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.alertLocation {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.alertMeta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.severityBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* Severity variants */
+.severityHigh {
+  border-left-color: var(--alert-red);
+}
+
+.severityHigh.severityBadge {
+  background-color: var(--alert-red-bg);
+  color: var(--alert-red);
+  border-left-color: transparent;
+}
+
+.alertCard.severityHigh {
+  background-color: #fffbfb;
+}
+
+.severityMedium {
+  border-left-color: var(--alert-orange);
+}
+
+.severityMedium.severityBadge {
+  background-color: var(--alert-orange-bg);
+  color: var(--alert-orange);
+  border-left-color: transparent;
+}
+
+.alertCard.severityMedium {
+  background-color: #fffcf7;
+}
+
+.severityLow {
+  border-left-color: var(--alert-yellow);
+}
+
+.severityLow.severityBadge {
+  background-color: var(--alert-yellow-bg);
+  color: #a16207;
+  border-left-color: transparent;
+}
+
+.alertCard.severityLow {
+  background-color: #fefef5;
+}
+
+.severityInfo {
+  border-left-color: var(--alert-blue);
+}
+
+.severityInfo.severityBadge {
+  background-color: var(--alert-blue-bg);
+  color: var(--alert-blue);
+  border-left-color: transparent;
+}
+
+.alertCard.severityInfo {
+  background-color: #f8fbff;
+}
