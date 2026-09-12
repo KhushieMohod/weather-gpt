@@ -5,9 +5,9 @@ This file is the active project tracker for WeatherGPT. Follow this file for cur
 ## Project Status (Roadmap)
 
 - **Stage 1 — Base Application Skeleton & FastAPI Structure**: ✅ Completed
-- **Stage 2 — Data Ingestion & Processing Pipelines**: In progress / TODO
-- **Stage 3 — RAG + LLM Integration & Risk Engine**: TODO
-- **Stage 4 — Frontend & Delivery Channels**: TODO
+- **Stage 2 — Data Ingestion & Processing Pipelines**: ✅ Completed
+- **Stage 3 — RAG + LLM Integration & Risk Engine**: ✅ Completed
+- **Stage 4 — Frontend & Delivery Channels**: In progress (Backend APIs completed, Next.js frontend started)
 - **Stage 5 — Deployment, Scaling & Real-Time Ops**: TODO
 - **Stage 7 — SIH 2026 Master Alignment**: ✅ Completed
 
@@ -276,8 +276,9 @@ uvicorn src.app.main:app --reload --port 8000
 
 ## Notes & Next Actions
 
-- Stage 1 is complete. Next pick: implement Stage 2 ingestion connectors (IMD pull, MOSDAC S3 or API, GFS/WRF fetcher, ERA5 ingestion), build validation/dedup pipeline, and add an ingestion queue / scheduler.
-- Add tests for the API and CI for formatting and linting.
+- Stages 1, 2, and 3 are complete. The backend ingestion connectors (IMD, MOSDAC, GFS, ERA5), validation pipelines, Risk Engine, and RAG capabilities are implemented.
+- Next pick: Build out the Next.js frontend (`frontend-next/`) to consume the advanced backend APIs, and configure the deployment strategy (Docker/Kubernetes).
+- Add tests for the frontend and CI for formatting and linting.
 
 ---
 
